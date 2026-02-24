@@ -13,7 +13,10 @@ import {
     Copy,
     Download,
     Check,
-    Zap
+    Zap,
+    Building2,
+    Users,
+    Briefcase
 } from 'lucide-react';
 
 const Results = () => {
@@ -67,7 +70,7 @@ const Results = () => {
                 text = `7-DAY INTENSIVE PLAN\n\n${entryData.plan.map(p => `${p.day}: ${p.topics.join(', ')}`).join('\n')}`;
                 break;
             case 'checklist':
-                text = `PREPARATION CHECKLIST\n\n${entryData.checklist.map(c => `${c.round}\n${c.items.map(i => `- ${i}`).join('\n')}`).join('\n\n')}`;
+                text = `INTERVIEW ROUND MAPPING\n\n${entryData.checklist.map(c => `${c.round}\nWhy it matters: ${c.why}\n${c.items.map(i => `- ${i}`).join('\n')}`).join('\n\n')}`;
                 break;
             case 'questions':
                 text = `TOP 10 INTERVIEW QUESTIONS\n\n${entryData.questions.map((q, i) => `${i + 1}. ${q}`).join('\n')}`;
@@ -75,8 +78,9 @@ const Results = () => {
             case 'full':
                 text = `PLACEMENT READINESS ANALYSIS - ${entryData.role} @ ${entryData.company}\n` +
                     `Score: ${entryData.readinessScore}%\n\n` +
+                    `COMPANY INTEL:\nIndustry: ${entryData.companyIntel?.industry}\nSize: ${entryData.companyIntel?.size}\nFocus: ${entryData.companyIntel?.hiringFocus}\n\n` +
                     `EXTRACTED SKILLS:\n${Object.entries(entryData.extractedSkills).map(([c, s]) => `${c}: ${s.join(', ')}`).join('\n')}\n\n` +
-                    `ROUND CHECKLIST:\n${entryData.checklist.map(c => `${c.round}\n${c.items.map(i => `- ${i}`).join('\n')}`).join('\n\n')}\n\n` +
+                    `ROUND MAPPING:\n${entryData.checklist.map(c => `${c.round}\n${c.items.map(i => `- ${i}`).join('\n')}`).join('\n\n')}\n\n` +
                     `7-DAY PLAN:\n${entryData.plan.map(p => `${p.day}: ${p.topics.join(', ')}`).join('\n')}\n\n` +
                     `INTERVIEW QUESTIONS:\n${entryData.questions.map((q, i) => `${i + 1}. ${q}`).join('\n')}`;
                 break;
@@ -124,24 +128,59 @@ const Results = () => {
                 </div>
             </div>
 
-            {/* Export Toolbar */}
-            <div className="flex flex-wrap gap-3 p-1">
-                <button onClick={() => handleExport('plan')} className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold hover:border-indigo-600 hover:text-indigo-600 transition-all shadow-sm">
-                    {copyStatus === 'plan' ? <Check size={16} /> : <Copy size={16} />} Copy 7-day Plan
-                </button>
-                <button onClick={() => handleExport('checklist')} className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold hover:border-indigo-600 hover:text-indigo-600 transition-all shadow-sm">
-                    {copyStatus === 'checklist' ? <Check size={16} /> : <Copy size={16} />} Copy Checklist
-                </button>
-                <button onClick={() => handleExport('questions')} className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold hover:border-indigo-600 hover:text-indigo-600 transition-all shadow-sm">
-                    {copyStatus === 'questions' ? <Check size={16} /> : <Copy size={16} />} Copy Questions
-                </button>
-                <button onClick={() => handleExport('full')} className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 transition-all shadow-md">
-                    <Download size={16} /> Download as TXT
-                </button>
-            </div>
-
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 space-y-8">
+                    {/* Company Intel Block */}
+                    {entryData.companyIntel && (
+                        <Card className="bg-indigo-600 text-white border-none overflow-hidden relative">
+                            <div className="absolute top-0 right-0 p-8 opacity-10">
+                                <Building2 size={120} />
+                            </div>
+                            <div className="relative z-10">
+                                <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
+                                    <Briefcase size={20} /> Company Intelligence
+                                </h3>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <div>
+                                        <p className="text-xs text-indigo-200 uppercase font-bold tracking-widest mb-1">Industry</p>
+                                        <p className="font-bold text-lg">{entryData.companyIntel.industry}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs text-indigo-200 uppercase font-bold tracking-widest mb-1">Estimated Size</p>
+                                        <div className="flex items-center gap-2">
+                                            <Users size={16} className="text-indigo-200" />
+                                            <p className="font-bold text-lg">{entryData.companyIntel.size}</p>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs text-indigo-200 uppercase font-bold tracking-widest mb-1">Hiring Focus</p>
+                                        <p className="font-bold text-lg">{entryData.companyIntel.hiringFocus}</p>
+                                    </div>
+                                </div>
+                                <div className="mt-6 pt-6 border-t border-white/10 flex items-center gap-2 text-sm text-indigo-100 italic">
+                                    <Zap size={14} className="text-yellow-400" />
+                                    "Demo Mode: Company intel generated heuristically based on name and JD content."
+                                </div>
+                            </div>
+                        </Card>
+                    )}
+
+                    {/* Export Toolbar - Moved layout-wise but functionally same */}
+                    <div className="flex flex-wrap gap-3 p-1">
+                        <button onClick={() => handleExport('plan')} className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold hover:border-indigo-600 hover:text-indigo-600 transition-all shadow-sm">
+                            {copyStatus === 'plan' ? <Check size={16} /> : <Copy size={16} />} 7-Day Plan
+                        </button>
+                        <button onClick={() => handleExport('checklist')} className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold hover:border-indigo-600 hover:text-indigo-600 transition-all shadow-sm">
+                            {copyStatus === 'checklist' ? <Check size={16} /> : <Copy size={16} />} Round Mapping
+                        </button>
+                        <button onClick={() => handleExport('questions')} className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold hover:border-indigo-600 hover:text-indigo-600 transition-all shadow-sm">
+                            {copyStatus === 'questions' ? <Check size={16} /> : <Copy size={16} />} Question Bank
+                        </button>
+                        <button onClick={() => handleExport('full')} className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 transition-all shadow-md">
+                            <Download size={16} /> Download Case Study
+                        </button>
+                    </div>
+
                     {/* Interactive Skills */}
                     <Card>
                         <div className="flex justify-between items-center mb-6">
@@ -206,42 +245,39 @@ const Results = () => {
                             ))}
                         </div>
                     </Card>
-
-                    {/* Likely Questions */}
-                    <Card>
-                        <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
-                            <HelpCircle size={20} className="text-indigo-600" /> Interview Question Bank
-                        </h3>
-                        <div className="space-y-4">
-                            {entryData.questions.map((q, i) => (
-                                <div key={i} className="p-4 bg-gray-50 rounded-lg border border-gray-100">
-                                    <p className="text-gray-900 font-medium leading-relaxed italic">"{q}"</p>
-                                </div>
-                            ))}
-                        </div>
-                    </Card>
                 </div>
 
-                {/* Right Column: Round-wise Checklist */}
+                {/* Right Column: Round Mapping Timeline */}
                 <div className="space-y-8">
-                    <Card className="sticky top-24">
-                        <h3 className="text-lg font-bold mb-6">Preparation Checklist</h3>
-                        <div className="space-y-8">
-                            {entryData.checklist.map((round, idx) => (
-                                <div key={idx}>
-                                    <h4 className="text-xs font-bold text-indigo-600 uppercase tracking-widest mb-3">{round.round}</h4>
-                                    <ul className="space-y-3">
-                                        {round.items.map((item, i) => (
-                                            <li key={i} className="flex items-center gap-3 text-sm text-gray-600">
-                                                <div className="w-5 h-5 rounded border border-gray-200 flex items-center justify-center shrink-0">
-                                                    {/* Visual only checklist */}
-                                                </div>
-                                                {item}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            ))}
+                    <Card className="sticky top-24 border-indigo-100">
+                        <h3 className="text-lg font-bold mb-6">Target Interview Rounds</h3>
+                        <div className="relative">
+                            {/* Timeline Line */}
+                            <div className="absolute left-4 top-0 bottom-0 w-px bg-indigo-100 z-0"></div>
+
+                            <div className="space-y-10 relative z-10">
+                                {entryData.checklist.map((round, idx) => (
+                                    <div key={idx} className="flex gap-6 group">
+                                        <div className="w-8 h-8 rounded-full bg-white border-2 border-indigo-600 text-indigo-600 flex items-center justify-center font-bold text-xs shrink-0 group-hover:bg-indigo-600 group-hover:text-white transition-all shadow-sm">
+                                            {idx + 1}
+                                        </div>
+                                        <div className="space-y-2">
+                                            <h4 className="font-bold text-gray-900 leading-tight">{round.round}</h4>
+                                            <p className="text-xs text-indigo-600 font-medium bg-indigo-50 px-2 py-1 rounded inline-block">
+                                                {round.why}
+                                            </p>
+                                            <ul className="space-y-2 pt-2">
+                                                {round.items.map((item, i) => (
+                                                    <li key={i} className="flex items-center gap-2 text-sm text-gray-600">
+                                                        <CheckCircle2 size={14} className="text-gray-400 group-hover:text-indigo-400 transition-colors" />
+                                                        {item}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </Card>
                 </div>

@@ -30,6 +30,64 @@ export const analyzeJD = (company, role, jdText) => {
         skillConfidenceMap["General fresher stack"] = 'practice';
     }
 
+    // Company Intel Heuristics
+    const enterpriseList = ["Amazon", "Google", "Microsoft", "Meta", "Apple", "Netflix", "TCS", "Infosys", "Wipro", "HCL", "Accenture", "IBM", "Oracle", "Salesforce", "Cisco", "Intel"];
+    const isEnterprise = enterpriseList.some(e => new RegExp(e, 'i').test(company));
+
+    const companyIntel = {
+        industry: jdText.match(/finance|fintech|bank/i) ? "FinTech" :
+            jdText.match(/health|medical/i) ? "HealthTech" :
+                jdText.match(/e-commerce|retail/i) ? "E-commerce" : "Technology Services",
+        size: isEnterprise ? "Enterprise (2000+)" : (company.length > 0 ? "Startup (<200)" : "N/A"),
+        hiringFocus: isEnterprise ? "Structured DSA + Core Fundamentals" : "Practical Problem Solving + Stack Depth",
+        isEnterprise
+    };
+
+    // Dynamic Round Mapping
+    let rounds = [];
+    if (isEnterprise) {
+        rounds = [
+            {
+                round: "Round 1: OA & Aptitude",
+                why: "To filter candidates based on logical reasoning and basic coding speed.",
+                items: ["Speed-coding DSA", "Aptitude MCQs", "Core CS Basics"]
+            },
+            {
+                round: "Round 2: Technical Interview I",
+                why: "Deep dive into Data Structures and Algorithm efficiency.",
+                items: ["Array/String Logic", "Tree/Graph Traversal", "Complexity Analysis"]
+            },
+            {
+                round: "Round 3: Technical Interview II",
+                why: "Evaluates project knowledge and core engineering principles like DBMS/OS.",
+                items: ["Project Architecture", "System Design Basics", "Core CS (Database/OS)"]
+            },
+            {
+                round: "Round 4: Managerial/HR",
+                why: "Assesses cultural fit and alignment with company core values.",
+                items: ["Behavioral (STAR)", "Conflict Resolution", "Salary/Logistics"]
+            }
+        ];
+    } else {
+        rounds = [
+            {
+                round: "Round 1: Machine Coding / Practical",
+                why: "Startups value build speed and your ability to write clean, working code.",
+                items: [`Build a small ${allSkills[0] || 'Feature'}`, "API Integration", "State Management"]
+            },
+            {
+                round: "Round 2: Technical Discussion",
+                why: "Evaluates depth in chosen stack and architectural thinking.",
+                items: ["Stack-specific deep dive", "Framework internals", "Debugging Skills"]
+            },
+            {
+                round: "Round 3: Founder / Culture Round",
+                why: "Ensures you can thrive in a fast-paced, high-ownership environment.",
+                items: ["Vision alignment", "Product thinking", "High-ownership mindset"]
+            }
+        ];
+    }
+
     // Scoring
     let score = 35;
     score += Math.min(detectedCategoriesCount * 5, 30);
@@ -37,14 +95,6 @@ export const analyzeJD = (company, role, jdText) => {
     if (role.trim()) score += 10;
     if (jdText.length > 800) score += 10;
     score = Math.min(score, 100);
-
-    // Round-wise Checklist
-    const checklist = [
-        { round: "Round 1: Aptitude / Basics", items: ["Quantitative Aptitude", "Logical Reasoning", "Verbal Ability", "Basic Programming MCQs", "Company Culture MCQ"] },
-        { round: "Round 2: DSA + Core CS", items: ["Data Structures (Arrays, Trees, Graphs)", "Algorithm Complexity Analysis", "OOP Principles", "DBMS Joins and Normalization", "OS Semaphores/Paging basics"] },
-        { round: "Round 3: Tech Interview", items: ["Project Deep-dive (Architecture)", "Stack specific deep-dive", ...allSkills.map(s => `${s} Implementation Questions`), "Debugging exercise", "System Design (Scalability)"] },
-        { round: "Round 4: Managerial / HR", items: ["Situation-based questions (STAR)", "Why this company?", "Relocation/Contract discussion", "Strength/Weakness analysis", "Long-term goals alignment"] }
-    ];
 
     // 7-Day Plan
     const plan = [
@@ -108,8 +158,9 @@ export const analyzeJD = (company, role, jdText) => {
         role,
         jdText,
         extractedSkills,
+        companyIntel,
         plan,
-        checklist,
+        checklist: rounds, // Using dynamic rounds instead of static checklist
         questions: questions.slice(0, 10),
         readinessScore: score,
         baseReadinessScore: score,
