@@ -36,9 +36,8 @@ const AnalyzeJD = () => {
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
-                            <label className="text-sm font-semibold text-gray-700">Company Name</label>
+                            <label className="text-sm font-semibold text-gray-700">Company Name (Optional)</label>
                             <input
-                                required
                                 type="text"
                                 placeholder="e.g. Google, Amazon"
                                 className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
@@ -47,9 +46,8 @@ const AnalyzeJD = () => {
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-sm font-semibold text-gray-700">Target Role</label>
+                            <label className="text-sm font-semibold text-gray-700">Target Role (Optional)</label>
                             <input
-                                required
                                 type="text"
                                 placeholder="e.g. Software Engineer, Frontend Developer"
                                 className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
@@ -60,14 +58,24 @@ const AnalyzeJD = () => {
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-sm font-semibold text-gray-700">Job Description</label>
+                        <label className="text-sm font-semibold text-gray-700">Job Description (Required)</label>
                         <textarea
                             required
                             placeholder="Paste the job description text here..."
-                            className="w-full h-64 px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none resize-none"
+                            className={`w-full h-64 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none resize-none transition-all
+                                ${formData.jdText.length > 0 && formData.jdText.length < 200 ? 'border-amber-300 bg-amber-50/30' : 'border-gray-200'}
+                            `}
                             value={formData.jdText}
                             onChange={(e) => setFormData({ ...formData, jdText: e.target.value })}
                         />
+
+                        {formData.jdText.length > 0 && formData.jdText.length < 200 && (
+                            <div className="flex items-center gap-2 text-amber-600 text-sm font-medium animate-in fade-in slide-in-from-top-1">
+                                <Zap size={14} />
+                                <span>This JD is too short to analyze deeply. Paste full JD for better output.</span>
+                            </div>
+                        )}
+
                         <p className="text-xs text-gray-400">Heuristic tip: Mentioning tech stacks like React, SQL, or Java helps in better extraction.</p>
                     </div>
 
