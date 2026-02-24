@@ -309,7 +309,8 @@ const Results = () => {
                     </div>
                 </div>
             )}
-            );
+        </div>
+    );
 };
 
-            export default Results;
+export default Results;
