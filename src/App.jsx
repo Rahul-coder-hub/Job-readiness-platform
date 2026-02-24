@@ -1,24 +1,44 @@
 import React from 'react';
-import './index.css';
-import Shell from './components/layout/Shell';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import LandingPage from './pages/LandingPage';
+import DashboardLayout from './components/layout/DashboardLayout';
 
-import Button from './components/ui/Button';
+// Placeholder Pages
+const Dashboard = () => (
+  <div>
+    <h1 className="text-3xl font-bold mb-6">Dashboard Overview</h1>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm h-32 flex items-center justify-center text-gray-400">
+          Metric Card {i}
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+const Practice = () => <h1 className="text-3xl font-bold">Practice Problems</h1>;
+const Assessments = () => <h1 className="text-3xl font-bold">Mock Assessments</h1>;
+const Resources = () => <h1 className="text-3xl font-bold">Preparation Resources</h1>;
+const Profile = () => <h1 className="text-3xl font-bold">User Profile</h1>;
 
 function App() {
   return (
-    <Shell>
-      <div className="workspace-demo">
-        <h1>Interaction Workspace</h1>
-        <p className="text-block">
-          This is where the main product interaction happens. The design system is calm,
-          intentional, and coherent. No flashy animations, no noise—just clarity.
-        </p>
-        <div style={{ marginTop: '24px', display: 'flex', gap: '16px' }}>
-          <Button variant="primary">Primary Action</Button>
-          <Button variant="secondary">Secondary Action</Button>
-        </div>
-      </div>
-    </Shell>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+
+        <Route element={<DashboardLayout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/practice" element={<Practice />} />
+          <Route path="/assessments" element={<Assessments />} />
+          <Route path="/resources" element={<Resources />} />
+          <Route path="/profile" element={<Profile />} />
+        </Route>
+
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
