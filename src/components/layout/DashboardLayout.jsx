@@ -2,6 +2,8 @@ import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import {
     LayoutDashboard,
+    Search,
+    History as HistoryIcon,
     BookOpen,
     FileCheck,
     Library,
@@ -34,8 +36,13 @@ const DashboardLayout = () => {
                     <h2 className="text-2xl font-bold text-indigo-600">Placement Prep</h2>
                 </div>
 
-                <nav className="flex-1 px-4 space-y-2 mt-4">
+                <nav className="flex-1 px-4 space-y-1 mt-4">
                     <SidebarItem to="/dashboard" icon={LayoutDashboard} label="Dashboard" />
+                    <SidebarItem to="/analyze" icon={Search} label="Analyze JD" />
+                    <SidebarItem to="/history" icon={HistoryIcon} label="History" />
+                    <div className="pt-4 pb-2 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                        Preparation
+                    </div>
                     <SidebarItem to="/practice" icon={BookOpen} label="Practice" />
                     <SidebarItem to="/assessments" icon={FileCheck} label="Assessments" />
                     <SidebarItem to="/resources" icon={Library} label="Resources" />
