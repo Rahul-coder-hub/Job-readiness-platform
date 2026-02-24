@@ -9,6 +9,7 @@ const SKILL_CATEGORIES = {
 
 export const analyzeJD = (company, role, jdText) => {
     const extractedSkills = {};
+    const skillConfidenceMap = {};
     const allSkills = [];
     let detectedCategoriesCount = 0;
 
@@ -18,6 +19,7 @@ export const analyzeJD = (company, role, jdText) => {
         );
         if (matched.length > 0) {
             extractedSkills[category] = matched;
+            matched.forEach(s => skillConfidenceMap[s] = 'practice');
             allSkills.push(...matched);
             detectedCategoriesCount++;
         }
@@ -25,6 +27,7 @@ export const analyzeJD = (company, role, jdText) => {
 
     if (allSkills.length === 0) {
         extractedSkills["General"] = ["General fresher stack"];
+        skillConfidenceMap["General fresher stack"] = 'practice';
     }
 
     // Scoring
@@ -108,7 +111,9 @@ export const analyzeJD = (company, role, jdText) => {
         plan,
         checklist,
         questions: questions.slice(0, 10),
-        readinessScore: score
+        readinessScore: score,
+        baseReadinessScore: score,
+        skillConfidenceMap
     };
 };
 
@@ -116,6 +121,17 @@ export const saveToHistory = (analysis) => {
     const history = JSON.parse(localStorage.getItem('placement_prep_history') || '[]');
     history.unshift(analysis);
     localStorage.setItem('placement_prep_history', JSON.stringify(history));
+};
+
+export const updateHistoryEntry = (id, updates) => {
+    const history = getHistory();
+    const index = history.findIndex(item => item.id === id);
+    if (index !== -1) {
+        history[index] = { ...history[index], ...updates };
+        localStorage.setItem('placement_prep_history', JSON.stringify(history));
+        return history[index];
+    }
+    return null;
 };
 
 export const getHistory = () => {
